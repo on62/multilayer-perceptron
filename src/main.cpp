@@ -1,29 +1,40 @@
-#include "../include/graphicNetwork.hpp"
-#include "../include/heightMapNetwork.hpp"
-#include "../include/window.hpp"
+#include "graphicNetwork.hpp"
 
+#include <gtkmm/window.h>
 #include <gtkmm/application.h>
-#include <gtkmm/main.h>
 #include <iostream>
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main()
+{
+	try
+	{
+		constexpr auto width = 600u;
+		constexpr auto height = width;
+		constexpr auto learningRate = 0.1;
+		constexpr auto timeout = 1u; // 1ms
+		constexpr auto filename = "weight_data/file.txt";
+		const auto networkLayout = {2ul, 10ul, 1ul};
 
-    Gtk::Main app(argc, argv);
-    Window win;
-    win.set_title("Neural Network");
-    const int width(200);
-    win.resize(2 * width, width);
+		auto app = Gtk::Application::create();
 
-    createRandomFile("../files/file.txt", {2, 10, 1}, time(0));
+		Gtk::Window win;
+		win.set_title("Multi-layer Perceptron Network");
+		win.resize(width, height);
 
-    HeightMapGraphicNetwork network("../files/file.txt", 1, 0.1);
+		createRandomFile(filename, networkLayout);
 
-    win.add(network);
-    network.show();
+		GraphicNetwork network(filename, timeout, learningRate);
 
-    Gtk::Main::run(win);
+		win.add(network);
+		network.show();
+		app->run(win);
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 
-    return 0;
+	return 0;
 }
